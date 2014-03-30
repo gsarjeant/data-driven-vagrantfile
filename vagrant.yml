@@ -1,0 +1,14 @@
+nodes:
+  centos_15:
+    hostname: centos.vagrant.vm
+    box:  puppetlabs/centos-6.5-x86_64-puppet
+    ip: 192.168.139.10
+    memory: 1024
+    cpus: 1
+  debian_15:
+    hostname: debian.vagrant.vm
+    box: puppetlabs/debian-7.4-x86_64-nocm
+    #box: debian-73-x64-virtualbox-puppet
+    ip: 192.168.139.11
+    memory: 1024
+    cpus: 1
