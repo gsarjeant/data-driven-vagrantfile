@@ -3,7 +3,7 @@
 
 # This is intended to be a drop-in Vagrantfile, which reads VM configurations
 # from a yaml file (vagrant.yml) in the root directory.
-# It is only compatible with vagrant 1.5+
+# It supports vagrant cloud boxes and traditional boxes
 # See the README for more thorough documentation.
 
 # We're going to read from yaml files, so we gots to know how to yaml
@@ -20,11 +20,15 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  # Define vagrant VMs for each node defined in nodes.yml
+  # Define vagrant VMs for each node defined in vagrant.yml
   nodes.each do |node_name, node_details|
     config.vm.define node_name do |node|
-      # set box, configure hostname and IP
-      node.vm.box = "#{node_details['box']}"
+      # configure box name and url (if not a vagrant cloud box)
+      box_name = "#{node_details['box']}"
+      node.vm.box = "#{box_name}"
+      boxes.key?("#{box_name}") && node.vm.box_url = boxes[box_name]
+     
+      # configure hostname and IP 
       node.vm.hostname = node_details['hostname']
       node.vm.network "private_network", ip: node_details['ip']
 

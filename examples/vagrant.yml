@@ -1,14 +1,15 @@
+boxes:
+  centos-65-x64-virtualbox: http://puppet-vagrant-boxes.puppetlabs.com/centos-65-x64-virtualbox-nocm.box
 nodes:
-  centos_15:
+  centos:
     hostname: centos.vagrant.vm
-    box:  puppetlabs/centos-6.5-x86_64-puppet
+    box: centos-65-x64-virtualbox 
     ip: 192.168.139.10
     memory: 1024
     cpus: 1
-  debian_15:
+  debian:
     hostname: debian.vagrant.vm
-    box: puppetlabs/debian-7.4-x86_64-nocm
-    #box: debian-73-x64-virtualbox-puppet
+    box: puppetlabs/debian-7.4-64-nocm
     ip: 192.168.139.11
     memory: 1024
     cpus: 1
