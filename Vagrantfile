@@ -35,7 +35,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # configure synced folders 
       synced_folders = node_details['synced_folders']
       synced_folders && synced_folders.each do |synced_folder|
-        node.vm.synced_folder synced_folder['source'], synced_folder['dest']
+        node.vm.synced_folder synced_folder['host'], synced_folder['guest']
       end
 
       # configure forwarded ports
