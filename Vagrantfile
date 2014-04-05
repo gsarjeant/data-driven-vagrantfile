@@ -9,17 +9,24 @@
 # We're going to read from yaml files, so we gots to know how to yaml
 require 'yaml'
 
-# Read box and node configs from vagrant.yml
+# Verify that vagrant.yml exists
 root_dir = File.dirname(__FILE__)
-config = YAML.load_file("#{root_dir}/vagrant.yml")
-boxes = config['boxes']
-nodes = config['nodes']
+vagrant_yaml_file = "#{root_dir}/vagrant.yml"
+
+unless File.exists?(vagrant_yaml_file)
+  puts "ERROR: #{vagrant_yaml_file} does not exist"
+  exit
+end
+
+# Read box and node configs from vagrant.yml
+vagrant_yaml = YAML.load_file(vagrant_yaml_file)
+boxes = vagrant_yaml['boxes']
+nodes = vagrant_yaml['nodes']
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-
   # Define vagrant VMs for each node defined in vagrant.yml
   nodes.each do |node_name, node_details|
     config.vm.define node_name do |node|
@@ -53,5 +60,4 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       end
     end
   end
-
 end

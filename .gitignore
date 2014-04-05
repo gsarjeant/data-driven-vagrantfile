@@ -1,3 +1,4 @@
 *.swp
 vagrant.yml
 vagrant.json
+.vagrant
