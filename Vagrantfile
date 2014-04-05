@@ -9,19 +9,40 @@
 # We're going to read from yaml files, so we gots to know how to yaml
 require 'yaml'
 
-# Verify that vagrant.yml exists
-root_dir = File.dirname(__FILE__)
-vagrant_yaml_file = "#{root_dir}/vagrant.yml"
-
-unless File.exists?(vagrant_yaml_file)
-  puts "ERROR: #{vagrant_yaml_file} does not exist"
+# Print an error message and stop execution on handled errors
+def handle_error(error_msg)
+  puts "ERROR: #{error_msg}"
   exit
 end
 
+# Check the "nodes" element from vagrant.yml for existence and completeness
+def verify_nodes(nodes)
+  # Make sure that at least one node is defined
+  if !nodes || nodes.empty?
+    error_msg = "No nodes defined in vagrant.yml"
+    handle_error(error_msg)
+  end
+
+  # TODO: Add per-node checks for completeness
+  #       Build up one big error message with all failed checks
+end
+
+# Verify that vagrant.yml exists
+root_dir = File.dirname(__FILE__)
+vagrant_yaml_file = "#{root_dir}/vagrant.yml"
+error_msg = "#{vagrant_yaml_file} does not exist"
+handle_error(error_msg) unless File.exists?(vagrant_yaml_file)
+
 # Read box and node configs from vagrant.yml
 vagrant_yaml = YAML.load_file(vagrant_yaml_file)
+error_msg = "#{vagrant_yaml_file} exists, but is empty"
+handle_error(error_msg) unless vagrant_yaml
+
 boxes = vagrant_yaml['boxes']
 nodes = vagrant_yaml['nodes']
+
+# Verify that node definitions exist and are well-formed
+verify_nodes(nodes)
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
