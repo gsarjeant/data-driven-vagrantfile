@@ -92,6 +92,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         node.vm.network "forwarded_port", guest: forwarded_port['guest'], host: forwarded_port['host']
       end
 
+      # configure provisioners
+      provisioners = node_details['provisioners']
+      provisioners && provisioners.each do |provisioner|
+        case provisioner['type']
+        when :shell
+          config.vm.provision "shell" do |node_provisioner|
+            provisioner.key?('inline') && node_provisioner.path = provisioner['inline']
+            provisioner.key?('path') && node_provisioner.path = provisioner['path']
+          end
+        end
+      end
+
+      # Provider-specifc settings
+      #
       # configure memory and cpus
       # TODO: extend to work with VMWare Fusion provider
       node.vm.provider :virtualbox do |vb|
