@@ -56,9 +56,29 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       node.vm.box = "#{box_name}"
       boxes.key?("#{box_name}") && node.vm.box_url = boxes[box_name]
      
-      # configure hostname and IP 
+      # configure hostname
       node.vm.hostname = node_details['hostname']
-      node.vm.network "private_network", ip: node_details['ip']
+
+      # configure networks
+      networks = node_details['networks']
+      networks && networks.each do |network|
+        case network['name']
+        when :private_network
+          # If an IP is specified, use it, otherwise use DHCP
+          if network['ip']
+            node.vm.network network['name'], ip: network['ip']
+          else
+            node.vm.network network['name'], type: :dhcp
+          end
+        when :public_network
+          # If an IP is specified, use it, otherwise use DHCP
+          if network['ip'] 
+            node.vm.network network['name'], ip: network['ip'], bridge: network['bridge']
+          else
+            node.vm.network network['name'], bridge: network['bridge']
+          end
+        end
+      end
 
       # configure synced folders 
       synced_folders = node_details['synced_folders']
