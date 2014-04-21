@@ -100,6 +100,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           config.vm.provision "shell" do |node_provisioner|
             provisioner.key?('inline') && node_provisioner.path = provisioner['inline']
             provisioner.key?('path') && node_provisioner.path = provisioner['path']
+
+            # Set values of any arguments.
+            arguments = provisioner['arguments']
+            if arguments
+              node_arguments = Array.new
+
+              # Arguments may or may not be named,
+              # and named arguments may or may not have a value.
+              arguments.each do |argument|
+                argument.key?('name') && node_arguments.push(argument['name'])
+                argument.key?('value') && node_arguments.push(argument['value'])
+              end
+
+              node_provisioner.args = node_arguments
+            end
           end
         end
       end
