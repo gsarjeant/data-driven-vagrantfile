@@ -113,7 +113,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 argument.key?('value') && shell_arguments.push(argument['value'])
               end
 
-              shell.args = node_provisioner_arguments
+              shell.args = shell_arguments
             end
           end
         when :puppet

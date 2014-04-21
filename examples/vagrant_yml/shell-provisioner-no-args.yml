@@ -1,0 +1,12 @@
+boxes:
+  centos-65-x64-virtualbox-puppet: http://puppet-vagrant-boxes.puppetlabs.com/centos-65-x64-virtualbox-nocm.box
+nodes:
+  centos:
+    hostname: centos.vagrant.vm
+    box: centos-65-x64-virtualbox-puppet 
+    memory: 1024
+    cpus: 1
+    provisioners:
+        # shell provisioner - no arguments
+      - type: :shell
+        path: examples/provisioners/basic.sh

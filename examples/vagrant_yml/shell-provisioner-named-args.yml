@@ -1,0 +1,19 @@
+boxes:
+  centos-65-x64-virtualbox: http://puppet-vagrant-boxes.puppetlabs.com/centos-65-x64-virtualbox-nocm.box
+nodes:
+  centos:
+    hostname: centos.vagrant.vm
+    box: centos-65-x64-virtualbox 
+    memory: 1024
+    cpus: 1
+    provisioners:
+        # shell provisioner - positional arguments
+      - type: :shell
+        path: examples/provisioners/named_arguments.sh
+        arguments:
+          - name: -a
+          - value: this_is_argument_a
+          - name: -b
+          - name: -c
+          - value: argument c has spaces
+          - name: -d

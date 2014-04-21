@@ -1,6 +1,6 @@
 #!/bin/bash
 
-while getopts "a:bc:" OPT
+while getopts "a:bc:d" OPT
 do
   case $OPT in
     a)
@@ -11,6 +11,9 @@ do
       ;;
     c)
       echo "Argument c is set to: ${OPTARG}"
+      ;;
+    d)
+      echo "Argument d is set"
       ;;
     ?)
       echo "Bad argument ${OPT}"
