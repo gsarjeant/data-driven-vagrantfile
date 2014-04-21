@@ -104,16 +104,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             # Set values of any arguments.
             arguments = provisioner['arguments']
             if arguments
-              node_arguments = Array.new
+              node_provisioner_arguments = Array.new
 
               # Arguments may or may not be named,
               # and named arguments may or may not have a value.
               arguments.each do |argument|
-                argument.key?('name') && node_arguments.push(argument['name'])
-                argument.key?('value') && node_arguments.push(argument['value'])
+                argument.key?('name') && node_provisioner_arguments.push(argument['name'])
+                argument.key?('value') && node_provisioner_arguments.push(argument['value'])
               end
 
-              node_provisioner.args = node_arguments
+              node_provisioner.args = node_provisioner_arguments
             end
           end
         end
