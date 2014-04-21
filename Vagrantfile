@@ -97,24 +97,30 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       provisioners && provisioners.each do |provisioner|
         case provisioner['type']
         when :shell
-          config.vm.provision "shell" do |node_provisioner|
-            provisioner.key?('inline') && node_provisioner.path = provisioner['inline']
-            provisioner.key?('path') && node_provisioner.path = provisioner['path']
+          config.vm.provision "shell" do |shell|
+            provisioner.key?('inline') && shell.path = provisioner['inline']
+            provisioner.key?('path') && shell.path = provisioner['path']
 
             # Set values of any arguments.
             arguments = provisioner['arguments']
             if arguments
-              node_provisioner_arguments = Array.new
+              shell_arguments = Array.new
 
               # Arguments may or may not be named,
               # and named arguments may or may not have a value.
               arguments.each do |argument|
-                argument.key?('name') && node_provisioner_arguments.push(argument['name'])
-                argument.key?('value') && node_provisioner_arguments.push(argument['value'])
+                argument.key?('name') && shell_arguments.push(argument['name'])
+                argument.key?('value') && shell_arguments.push(argument['value'])
               end
 
-              node_provisioner.args = node_provisioner_arguments
+              shell.args = node_provisioner_arguments
             end
+          end
+        when :puppet
+          config.vm.provision "puppet" do |puppet|
+            provisioner.key?('module_path') && puppet.module_path = provisioner['module_path']
+            provisioner.key?('manifests_path') && puppet.manifests_path = provisioner['manifests_path']
+            provisioner.key?('manifest_file') && puppet.manifest_file = provisioner['manifest_file']
           end
         end
       end
