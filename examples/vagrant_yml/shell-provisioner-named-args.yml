@@ -7,7 +7,6 @@ nodes:
     memory: 1024
     cpus: 1
     provisioners:
-        # shell provisioner - positional arguments
       - type: :shell
         path: examples/provisioners/named_arguments.sh
         arguments:

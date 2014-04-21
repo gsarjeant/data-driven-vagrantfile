@@ -7,6 +7,5 @@ nodes:
     memory: 1024
     cpus: 1
     provisioners:
-        # shell provisioner - no arguments
       - type: :shell
         path: examples/provisioners/basic.sh
