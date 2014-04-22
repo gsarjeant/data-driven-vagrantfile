@@ -1,0 +1,13 @@
+#NOTE: you must start this vm with the --provider=vmware_fusion flag 
+#      if vmware_fusion is not set as your default provider
+boxes:
+  centos-64-x64-vmware: http://puppet-vagrant-boxes.puppetlabs.com/centos-64-x64-fusion503-nocm.box
+nodes:
+  centos_vmware:
+    hostname: centos-vmware.vagrant.vm
+    box: centos-64-x64-vmware
+    memory: 1024
+    cpus: 1
+    networks:
+      - name: :private_network
+        ip: 192.168.140.20

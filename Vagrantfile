@@ -128,11 +128,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # Provider-specifc settings
       #
       # configure memory and cpus
-      # TODO: extend to work with VMWare Fusion provider
       node.vm.provider :virtualbox do |vb|
         vb.name = node_name
         vb.customize [ "modifyvm", :id, "--memory", node_details['memory'] ]
         vb.customize [ "modifyvm", :id, "--cpus", node_details['cpus'] ]
+      end
+      node.vm.provider "vmware_fusion" do |vmf|
+        vmf.vmx["memsize"] = node_details['memory']
+        vmf.vmx["numvcpus"] = node_details['cpus']
       end
     end
   end
