@@ -11,8 +11,8 @@ nodes:
         path: examples/provisioners/named_arguments.sh
         arguments:
           - name: -a
-          - value: this_is_argument_a
+            value: this_is_argument_a
           - name: -b
           - name: -c
-          - value: argument c has spaces
+            value: argument c has spaces
           - name: -d
