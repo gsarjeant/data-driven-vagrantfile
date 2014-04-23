@@ -56,7 +56,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       node.vm.box = "#{box_name}"
       boxes.key?("#{box_name}") && node.vm.box_url = boxes[box_name]
      
-      # configure hostname
+      # configure basic settings
       node.vm.hostname = node_details['hostname']
 
       # configure networks
@@ -127,13 +127,28 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       # Provider-specifc settings
       #
-      # configure memory and cpus
+      # NOTE: memory and cpus are common enough settings that I don't treat them as
+      #       provider-specific in the .yml files
+      provider_settings = node_details['providers']
       node.vm.provider :virtualbox do |vb|
-        vb.name = node_name
+        # configure memory and cpus
         vb.customize [ "modifyvm", :id, "--memory", node_details['memory'] ]
         vb.customize [ "modifyvm", :id, "--cpus", node_details['cpus'] ]
+
+        # Virtualbox-only settings
+        vb.name = node_name
+        provider_settings && vb_settings = provider_settings['virtualbox']
+
+        # I'm not sure whether this is more magic than I want or just the right way to do this.
+        # Set up a hash in vagrant.yml where the key is the property name and the value is
+        # the value you want to set, and this will just work for any properties that the 
+        # virtualbox provider supports.
+        vb_settings && vb_settings.each do |key, value|
+          vb.instance_variable_set('@'+key, value)
+        end  
       end
       node.vm.provider "vmware_fusion" do |vmf|
+        # configure memory and cpus
         vmf.vmx["memsize"] = node_details['memory']
         vmf.vmx["numvcpus"] = node_details['cpus']
       end
