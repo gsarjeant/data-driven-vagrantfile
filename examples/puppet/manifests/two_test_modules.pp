@@ -1,0 +1,2 @@
+include test_module
+include test_module_2

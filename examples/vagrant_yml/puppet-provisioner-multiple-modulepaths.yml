@@ -1,0 +1,16 @@
+boxes:
+  centos-65-x64-virtualbox-puppet: http://puppet-vagrant-boxes.puppetlabs.com/centos-65-x64-virtualbox-puppet.box
+nodes:
+  centos:
+    hostname: centos.vagrant.vm
+    box: centos-65-x64-virtualbox-puppet 
+    memory: 1024
+    cpus: 1
+    provisioners:
+        # puppet provisioner
+      - type: :puppet
+        module_path: 
+          - examples/puppet/modules
+          - examples/puppet/more-modules
+        manifests_path: examples/puppet/manifests
+        manifest_file: two_test_modules.pp
