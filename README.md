@@ -14,7 +14,7 @@ The Vagrantfile currently supports the following vagrant capabilities:
 * Vagrant versions
     * 1.4.x
     * 1.5.x
-* Box formats
+* Box sources
     * Traditional vagrant boxes (pre-vagrant-cloud)
     * Vagrant cloud (vagrant version >= 1.5.0 required)
 * Guests
