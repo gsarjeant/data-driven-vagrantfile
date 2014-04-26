@@ -7,9 +7,9 @@ nodes:
     memory: 1024
     cpus: 1
     provisioners:
-      - :puppet:
-          :module_path:
+      - puppet:
+          module_path:
             - examples/puppet/modules
             - examples/puppet/more-modules
-          :manifests_path: examples/puppet/manifests
-          :manifest_file: two_test_modules.pp
+          manifests_path: examples/puppet/manifests
+          manifest_file: two_test_modules.pp

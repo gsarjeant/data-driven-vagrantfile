@@ -35,8 +35,8 @@ def shell_provisioner_params( yaml_arguments )
   # Arguments may or may not be named,
   # and named arguments may or may not have a value.
   yaml_arguments.each do |argument|
-    argument.key?(:name) && shell_arguments.push(argument[:name])
-    argument.key?(:value) && shell_arguments.push(argument[:value])
+    argument.key?('name') && shell_arguments.push(argument['name'])
+    argument.key?('value') && shell_arguments.push(argument['value'])
   end
 
   shell_arguments
@@ -111,16 +111,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       provisioners = node_details['provisioners']
       provisioners && provisioners.each do |provisioner|
         provisioner.each do | provisioner_type, provisioner_params |
-          node.vm.provision provisioner_type.to_s do |provision|
+          node.vm.provision provisioner_type do |provision|
             provisioner_params.each do | key, value |
-              if key == :arguments
+              if key == 'arguments'
                 provision.args = shell_provisioner_params( value ) 
               else
-                provision.instance_variable_set( '@' + key.to_s, value )
+                provision.instance_variable_set( '@' + key, value )
               end
             end
           end
-        end
+        ena
       end
 
       # Provider-specifc settings
