@@ -111,24 +111,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       provisioners = node_details['provisioners']
       provisioners && provisioners.each do |provisioner|
         provisioner.each do | provisioner_type, provisioner_params |
-          case provisioner_type
-          when :shell
-            config.vm.provision "shell" do |shell|
-              # Each key should correspond to a valid vagrant shell provisioner setting,
-              # except for 'arguments', which is an array of arguments to pass to the script.
-              provisioner_params.each do | key, value |
-                if key == :arguments
-                  shell.args = shell_provisioner_params( value ) 
-                else
-                  shell.instance_variable_set( '@' + key.to_s, value )
-                end
-              end
-            end
-          when :puppet
-            config.vm.provision "puppet" do |puppet|
-              # Each key should correspond to a valid vagrant puppet provisioner setting
-              provisioner_params.each do | key, value |
-                puppet.instance_variable_set( '@' + key.to_s, value )
+          config.vm.provision provisioner_type.to_s do |provision|
+            provisioner_params.each do | key, value |
+              if key == :arguments
+                provision.args = shell_provisioner_params( value ) 
+              else
+                provision.instance_variable_set( '@' + key.to_s, value )
               end
             end
           end
