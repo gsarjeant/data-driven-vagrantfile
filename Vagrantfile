@@ -111,7 +111,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       provisioners = node_details['provisioners']
       provisioners && provisioners.each do |provisioner|
         provisioner.each do | provisioner_type, provisioner_params |
-          config.vm.provision provisioner_type.to_s do |provision|
+          node.vm.provision provisioner_type.to_s do |provision|
             provisioner_params.each do | key, value |
               if key == :arguments
                 provision.args = shell_provisioner_params( value ) 
