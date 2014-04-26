@@ -27,6 +27,21 @@ def verify_nodes(nodes)
   #       Build up one big error message with all failed checks
 end
 
+# Convert the shell provisioner arguments from vagrant.yml
+# into an array for the vagrant shell provisioner
+def shell_provisioner_params( yaml_arguments )
+  shell_arguments = Array.new
+
+  # Arguments may or may not be named,
+  # and named arguments may or may not have a value.
+  yaml_arguments.each do |argument|
+    argument.key?(:name) && shell_arguments.push(argument[:name])
+    argument.key?(:value) && shell_arguments.push(argument[:value])
+  end
+
+  shell_arguments
+end
+
 # Verify that vagrant.yml exists
 root_dir = File.dirname(__FILE__)
 vagrant_yaml_file = "#{root_dir}/vagrant.yml"
@@ -95,32 +110,27 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # configure provisioners
       provisioners = node_details['provisioners']
       provisioners && provisioners.each do |provisioner|
-        case provisioner['type']
-        when :shell
-          config.vm.provision "shell" do |shell|
-            provisioner.key?('inline') && shell.path = provisioner['inline']
-            provisioner.key?('path') && shell.path = provisioner['path']
-
-            # Set values of any arguments.
-            arguments = provisioner['arguments']
-            if arguments
-              shell_arguments = Array.new
-
-              # Arguments may or may not be named,
-              # and named arguments may or may not have a value.
-              arguments.each do |argument|
-                argument.key?('name') && shell_arguments.push(argument['name'])
-                argument.key?('value') && shell_arguments.push(argument['value'])
+        provisioner.each do | provisioner_type, provisioner_params |
+          case provisioner_type
+          when :shell
+            config.vm.provision "shell" do |shell|
+              # Each key should correspond to a valid vagrant shell provisioner setting,
+              # except for 'arguments', which is an array of arguments to pass to the script.
+              provisioner_params.each do | key, value |
+                if key == :arguments
+                  shell.args = shell_provisioner_params( value ) 
+                else
+                  shell.instance_variable_set( '@' + key.to_s, value )
+                end
               end
-
-              shell.args = shell_arguments
             end
-          end
-        when :puppet
-          config.vm.provision "puppet" do |puppet|
-            provisioner.key?('module_path') && puppet.module_path = provisioner['module_path']
-            provisioner.key?('manifests_path') && puppet.manifests_path = provisioner['manifests_path']
-            provisioner.key?('manifest_file') && puppet.manifest_file = provisioner['manifest_file']
+          when :puppet
+            config.vm.provision "puppet" do |puppet|
+              # Each key should correspond to a valid vagrant puppet provisioner setting
+              provisioner_params.each do | key, value |
+                puppet.instance_variable_set( '@' + key.to_s, value )
+              end
+            end
           end
         end
       end
@@ -139,10 +149,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         vb.name = node_name
         provider_settings && vb_settings = provider_settings['virtualbox']
 
-        # I'm not sure whether this is more magic than I want or just the right way to do this.
-        # Set up a hash in vagrant.yml where the key is the property name and the value is
-        # the value you want to set, and this will just work for any properties that the 
-        # virtualbox provider supports.
+        # Each key should correspond to a valid virtualbox provider-specific setting for vagrant
         vb_settings && vb_settings.each do |key, value|
           vb.instance_variable_set('@'+key, value)
         end  
