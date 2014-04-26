@@ -5,7 +5,7 @@ This project defines a Vagrantfile that reads all VM configuration from a file, 
 
 There are a number of sample vagrant.yml files in the [examples/vagrant_yml](examples/vagrant_yml) directory of this project.
 
-See the Project Wiki (coming soon!) for detailed configuration documentation.
+See the [Project Wiki](wiki) (content coming soon!) for detailed configuration documentation.
 
 ## Supported vagrant capabilities
 
