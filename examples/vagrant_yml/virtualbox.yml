@@ -6,3 +6,6 @@ nodes:
     box: centos-65-x64-virtualbox 
     memory: 1024
     cpus: 1
+    providers:
+      virtualbox:
+        gui: true
