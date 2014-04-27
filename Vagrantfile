@@ -107,7 +107,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         node.vm.network "forwarded_port", guest: forwarded_port['guest'], host: forwarded_port['host']
       end
 
-      # configure provisioners
+      # Configure provisioners
+      # Each key should correspond to a valid vagrant provisioner.
+      # Each value should correspond to a valid setting for that provisioner.
       provisioners = node_details['provisioners']
       provisioners && provisioners.each do |provisioner|
         provisioner.each do | provisioner_type, provisioner_params |
@@ -123,30 +125,31 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         end
       end
 
-      # Provider-specifc settings
-      #
+      # Special case provider-specifc settings
       # NOTE: memory and cpus are common enough settings that I don't treat them as
       #       provider-specific in the .yml files
-      provider_settings = node_details['providers']
       node.vm.provider :virtualbox do |vb|
-        # configure memory and cpus
         vb.customize [ "modifyvm", :id, "--memory", node_details['memory'] ]
         vb.customize [ "modifyvm", :id, "--cpus", node_details['cpus'] ]
-
-        # Virtualbox-only settings
         vb.name = node_name
-        provider_settings && vb_settings = provider_settings['virtualbox']
-
-        # Each key should correspond to a valid virtualbox provider-specific setting for vagrant
-        vb_settings && vb_settings.each do |key, value|
-          vb.instance_variable_set('@'+key, value)
-        end  
       end
       node.vm.provider "vmware_fusion" do |vmf|
-        # configure memory and cpus
         vmf.vmx["memsize"] = node_details['memory']
         vmf.vmx["numvcpus"] = node_details['cpus']
       end
+
+      # General provider-specific settings
+      # Each key should correspond to a valid vagrant provider
+      # Each value should be a hash of valid settings for that provider
+      providers = node_details['providers']
+      providers && providers.each do |provider_type, provider_params|
+        node.vm.provider provider_type do |node_provider|
+           provider_params.each do |key, value| 
+             node_provider.instance_variable_set( '@' + key, value )
+           end
+        end
+      end
+
     end
   end
 end
