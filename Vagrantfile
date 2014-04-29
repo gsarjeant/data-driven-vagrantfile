@@ -77,20 +77,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # configure networks
       networks = node_details['networks']
       networks && networks.each do |network|
-        case network['name']
-        when :private_network
-          # If an IP is specified, use it, otherwise use DHCP
-          if network['ip']
-            node.vm.network network['name'], ip: network['ip']
+        network.each do | network_type, network_params |
+          if network_params
+            node.vm.network network_type, network_params
           else
-            node.vm.network network['name'], type: :dhcp
-          end
-        when :public_network
-          # If an IP is specified, use it, otherwise use DHCP
-          if network['ip'] 
-            node.vm.network network['name'], ip: network['ip'], bridge: network['bridge']
-          else
-            node.vm.network network['name'], bridge: network['bridge']
+            node.vm.network network_type
           end
         end
       end
