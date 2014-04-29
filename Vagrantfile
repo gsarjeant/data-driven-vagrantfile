@@ -95,12 +95,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # configure forwarded ports
       forwarded_ports = node_details['forwarded_ports']
       forwarded_ports && forwarded_ports.each do |forwarded_port|
-        node.vm.network "forwarded_port", guest: forwarded_port['guest'], host: forwarded_port['host']
+        node.vm.network "forwarded_port", forwarded_port
       end
 
       # Configure provisioners
       # Each key should correspond to a valid vagrant provisioner.
       # Each value should correspond to a valid setting for that provisioner.
+      #   (Except for 'arguments, which is an array of arguments to the shell provisioner script.)
       provisioners = node_details['provisioners']
       provisioners && provisioners.each do |provisioner|
         provisioner.each do | provisioner_type, provisioner_params |
