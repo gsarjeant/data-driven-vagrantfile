@@ -77,7 +77,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # configure networks
       networks = node_details['networks']
       networks && networks.each do |network|
-        network.each do | network_type, network_params |
+        network.each do |network_type, network_params|
           if network_params
             node.vm.network network_type, network_params
           else
@@ -104,9 +104,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       #   (Except for 'arguments, which is an array of arguments to the shell provisioner script.)
       provisioners = node_details['provisioners']
       provisioners && provisioners.each do |provisioner|
-        provisioner.each do | provisioner_type, provisioner_params |
+        provisioner.each do |provisioner_type, provisioner_params|
           node.vm.provision provisioner_type do |provision|
-            provisioner_params.each do | key, value |
+            provisioner_params.each do |key, value|
               if key == 'arguments'
                 provision.args = shell_provisioner_params( value ) 
               else
