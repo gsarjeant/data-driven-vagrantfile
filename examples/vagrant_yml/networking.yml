@@ -8,17 +8,17 @@ nodes:
     cpus: 1
     networks:
         # private (host-only) network, IP assigned by DHCP
-      - :private_network:
-          :type: :dhcp
+      - private_network:
+          type: :dhcp
         # private (host-only) network, static IP
-      - :private_network:
-          :ip: 192.168.139.10
+      - private_network:
+          ip: 192.168.139.10
         # bridged network, bridge interface specified, IP assigned by DHCP
-      - :public_network:
-          :bridge: "en0: Wi-Fi (AirPort)"
+      - public_network:
+          bridge: "en0: Wi-Fi (AirPort)"
         # bridged network, bridge interface specified, static IP
-      - :public_network:
-          :bridge: "en0: Wi-Fi (AirPort)"
-          :ip: 192.168.5.200
+      - public_network:
+          bridge: "en0: Wi-Fi (AirPort)"
+          ip: 192.168.5.200
         # bridged network, prompt for bridge interface specified, IP assigned by DHCP
-      - :public_network:
+      - public_network:

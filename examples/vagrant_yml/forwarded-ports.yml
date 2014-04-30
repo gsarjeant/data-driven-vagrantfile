@@ -7,7 +7,7 @@ nodes:
     memory: 1024
     cpus: 1
     forwarded_ports:
-      - :host: 10080
-        :guest: 80
-      - :host: 10081
-        :guest: 81
+      - host: 10080
+        guest: 80
+      - host: 10081
+        guest: 81

@@ -29,7 +29,7 @@ end
 
 # Convert the shell provisioner arguments from vagrant.yml
 # into an array for the vagrant shell provisioner
-def shell_provisioner_params( yaml_arguments )
+def shell_provisioner_params(yaml_arguments)
   shell_arguments = Array.new
 
   # Arguments may or may not be named,
@@ -40,6 +40,12 @@ def shell_provisioner_params( yaml_arguments )
   end
 
   shell_arguments
+end
+
+# convert all keys in the given hash to symbols
+# NOTE: Doesn't work with nested hashes, but I don't need this for those yet
+def keys_to_symbols(hash_in)
+  hash_in.inject({}){ |hash_out, (key, value)| hash_out[key.to_sym] = value; hash_out}
 end
 
 # Verify that vagrant.yml exists
@@ -79,6 +85,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       networks && networks.each do |network|
         network.each do |network_type, network_params|
           if network_params
+            network_params = keys_to_symbols(network_params)
             node.vm.network network_type, network_params
           else
             node.vm.network network_type
@@ -95,6 +102,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # configure forwarded ports
       forwarded_ports = node_details['forwarded_ports']
       forwarded_ports && forwarded_ports.each do |forwarded_port|
+        forwarded_port = keys_to_symbols(forwarded_port)
         node.vm.network "forwarded_port", forwarded_port
       end
 
@@ -108,9 +116,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           node.vm.provision provisioner_type do |provision|
             provisioner_params.each do |key, value|
               if key == 'arguments'
-                provision.args = shell_provisioner_params( value ) 
+                provision.args = shell_provisioner_params(value) 
               else
-                provision.instance_variable_set( '@' + key, value )
+                provision.instance_variable_set('@' + key, value) 
               end
             end
           end
@@ -137,7 +145,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       providers && providers.each do |provider_type, provider_params|
         node.vm.provider provider_type do |node_provider|
            provider_params.each do |key, value| 
-             node_provider.instance_variable_set( '@' + key, value )
+             node_provider.instance_variable_set('@' + key, value)
            end
         end
       end
