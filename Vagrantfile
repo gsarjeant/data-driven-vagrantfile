@@ -19,7 +19,7 @@ end
 def verify_nodes(nodes)
   # Make sure that at least one node is defined
   if !nodes || nodes.empty?
-    error_msg = "No nodes defined in vagrant.yml"
+    error_msg = 'No nodes defined in vagrant.yml'
     handle_error(error_msg)
   end
 
@@ -71,7 +71,7 @@ nodes = vagrant_yaml['nodes']
 verify_nodes(nodes)
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
-VAGRANTFILE_API_VERSION = "2"
+VAGRANTFILE_API_VERSION = '2'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Define vagrant VMs for each node defined in vagrant.yml
@@ -108,7 +108,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       forwarded_ports = node_details['forwarded_ports']
       forwarded_ports && forwarded_ports.each do |forwarded_port|
         forwarded_port = keys_to_symbols(forwarded_port)
-        node.vm.network "forwarded_port", forwarded_port
+        node.vm.network 'forwarded_port', forwarded_port
       end
 
       # Configure provisioners
@@ -145,14 +145,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # Special case provider-specifc settings
       # NOTE: memory and cpus are common enough settings that I don't treat them as
       #       provider-specific in the .yml files
-      node.vm.provider :virtualbox do |vb|
-        vb.customize [ "modifyvm", :id, "--memory", node_details['memory'] ]
-        vb.customize [ "modifyvm", :id, "--cpus", node_details['cpus'] ]
+      node.vm.provider 'virtualbox' do |vb|
+        vb.customize [ 'modifyvm', :id, '--memory', node_details['memory'] ]
+        vb.customize [ 'modifyvm', :id, '--cpus', node_details['cpus'] ]
         vb.name = node_name
       end
-      node.vm.provider "vmware_fusion" do |vmf|
-        vmf.vmx["memsize"] = node_details['memory']
-        vmf.vmx["numvcpus"] = node_details['cpus']
+      node.vm.provider 'vmware_fusion' do |vmf|
+        vmf.vmx['memsize'] = node_details['memory']
+        vmf.vmx['numvcpus'] = node_details['cpus']
       end
 
     end
