@@ -9,8 +9,8 @@ nodes:
     memory: 1024
     cpus: 1
     networks:
-      - name: :private_network
-        ip: 192.168.140.20
+      - private_network:
+          ip: 192.168.140.20
     providers:
       vmware_fusion:
         gui: false

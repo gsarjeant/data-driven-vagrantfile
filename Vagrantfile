@@ -45,7 +45,12 @@ end
 # convert all keys in the given hash to symbols
 # NOTE: Doesn't work with nested hashes, but I don't need this for those yet
 def keys_to_symbols(hash_in)
-  hash_in.inject({}){ |hash_out, (key, value)| hash_out[key.to_sym] = value; hash_out}
+  hash_out = hash_in.inject({}) do |hash_rekeyed, (key, value)|
+    hash_rekeyed[key.to_sym] = value
+    hash_rekeyed
+  end
+
+  hash_out
 end
 
 # Verify that vagrant.yml exists
@@ -118,7 +123,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
               if key == 'arguments'
                 provision.args = shell_provisioner_params(value) 
               else
-                provision.instance_variable_set('@' + key, value) 
+                provision.send("#{key}=", value) 
               end
             end
           end
@@ -145,7 +150,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       providers && providers.each do |provider_type, provider_params|
         node.vm.provider provider_type do |node_provider|
            provider_params.each do |key, value| 
-             node_provider.instance_variable_set('@' + key, value)
+             node_provider.send("#{key}=", value)
            end
         end
       end
