@@ -130,6 +130,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         end
       end
 
+      # General provider-specific settings
+      # Each key should correspond to a valid vagrant provider
+      # Each value should be a hash of valid settings for that provider
+      providers = node_details['providers']
+      providers && providers.each do |provider_type, provider_params|
+        node.vm.provider provider_type do |node_provider|
+           provider_params.each do |key, value| 
+             node_provider.send("#{key}=", value)
+           end
+        end
+      end
+
       # Special case provider-specifc settings
       # NOTE: memory and cpus are common enough settings that I don't treat them as
       #       provider-specific in the .yml files
@@ -141,18 +153,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       node.vm.provider "vmware_fusion" do |vmf|
         vmf.vmx["memsize"] = node_details['memory']
         vmf.vmx["numvcpus"] = node_details['cpus']
-      end
-
-      # General provider-specific settings
-      # Each key should correspond to a valid vagrant provider
-      # Each value should be a hash of valid settings for that provider
-      providers = node_details['providers']
-      providers && providers.each do |provider_type, provider_params|
-        node.vm.provider provider_type do |node_provider|
-           provider_params.each do |key, value| 
-             node_provider.send("#{key}=", value)
-           end
-        end
       end
 
     end
