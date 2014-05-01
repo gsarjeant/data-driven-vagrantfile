@@ -114,7 +114,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # Configure provisioners
       # Each key should correspond to a valid vagrant provisioner.
       # Each value should correspond to a valid setting for that provisioner.
-      #   (Except for 'arguments, which is an array of arguments to the shell provisioner script.)
+      #   (Except for 'arguments', which is an array of arguments to the shell provisioner script.)
       provisioners = node_details['provisioners']
       provisioners && provisioners.each do |provisioner|
         provisioner.each do |provisioner_type, provisioner_params|
