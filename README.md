@@ -1,7 +1,7 @@
 data-driven-vagrantfile
 =======================
 
-This project defines a Vagrantfile that reads all VM configuration from a file, vagrant.yml, that resides in the same directory as the Vagrantfile. You should be able to use the Vagrantfile without modification for most commonly used vagrant settings, defining your project setttings in vagrant.yml. You can find detailed documentation of the vagrant settings at the [vagrant](http://www.vagrantup.com/) project's [documentation](http://docs.vagrantup.com/v2/) page. This project's documentation will focus on configuring vagrant.yml for supported settings.
+This project defines a Vagrantfile that reads all VM configuration from a file, vagrant.yml, that resides in the same directory as the Vagrantfile. You should be able to use the Vagrantfile without modification for most commonly used vagrant settings, defining your project settings in vagrant.yml. You can find detailed documentation of the vagrant settings at the [vagrant](http://www.vagrantup.com/) project's [documentation](http://docs.vagrantup.com/v2/) page. This project's documentation will focus on configuring vagrant.yml for supported settings.
 
 There are a number of sample vagrant.yml files in the [examples/vagrant_yml](examples/vagrant_yml) directory of this project.
 
