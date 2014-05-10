@@ -34,7 +34,8 @@ The Vagrantfile currently supports the following vagrant capabilities:
 
 Future plans include support for:
 
-* Windows guest support through the vagrant-windows plugin
+* Vagrant 1.6+ support
+* Windows guest support, either through the vagrant-windows plugin or natively (Vagrant 1.6+ only)
 * Plugin configuration
 * Enhanced provider-specific configuration
 * Project-level default settings with node-level overrides
