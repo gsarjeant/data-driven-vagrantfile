@@ -29,7 +29,7 @@ end
 
 # Convert the shell provisioner arguments from vagrant.yml
 # into an array for the vagrant shell provisioner
-def shell_provisioner_params(yaml_arguments)
+def shell_provisioner_args(yaml_arguments)
   shell_arguments = Array.new
 
   # Arguments may or may not be named,
@@ -121,7 +121,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           node.vm.provision provisioner_type do |provision|
             provisioner_params.each do |key, value|
               if key == 'arguments'
-                provision.args = shell_provisioner_params(value) 
+                provision.args = shell_provisioner_args(value) 
               else
                 provision.send("#{key}=", value) 
               end
