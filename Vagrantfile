@@ -9,6 +9,10 @@
 # We're going to read from yaml files, so we gots to know how to yaml
 require 'yaml'
 
+###############################################################################
+# Utility functions
+###############################################################################
+
 # Print an error message and stop execution on handled errors
 def handle_error(error_msg)
   puts "ERROR: #{error_msg}"
@@ -70,6 +74,10 @@ nodes = vagrant_yaml['nodes']
 # Verify that node definitions exist and are well-formed
 verify_nodes(nodes)
 
+###############################################################################
+# Vagrantfile proper
+###############################################################################
+
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = '2'
 
@@ -80,7 +88,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # configure box name and url (if not a vagrant cloud box)
       box_name = "#{node_details['box']}"
       node.vm.box = "#{box_name}"
-      boxes.key?("#{box_name}") && node.vm.box_url = boxes[box_name]
+      boxes && boxes.key?("#{box_name}") && node.vm.box_url = boxes[box_name]
      
       # configure basic settings
       node.vm.hostname = node_details['hostname']
