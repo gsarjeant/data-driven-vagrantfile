@@ -57,6 +57,113 @@ def keys_to_symbols(hash_in)
   hash_out
 end
 
+###############################################################################
+# VM Configuration functions
+# 
+# The functions below read node settings from vagrant.yml and set the
+# properties of a vagrant VM appropriately.
+# They are called from the main vagrant configuration loop. 
+###############################################################################
+
+# Configure basic information (box, hostname) for the given node
+# from settings in vagrant.yml
+def configure_basic_info(node, node_details, boxes)
+  # set the box name and url (if not a vagrant cloud box)
+  box_name = "#{node_details['box']}"
+  node.vm.box = "#{box_name}"
+  boxes && boxes.key?("#{box_name}") && node.vm.box_url = boxes[box_name]
+     
+  # configure basic settings
+  node.vm.hostname = node_details['hostname']
+end
+
+# Configure networks for the given node from settings in vagrant.yml
+def configure_networks(node, node_details)
+  networks = node_details['networks']
+  networks && networks.each do |network|
+    network.each do |network_type, network_params|
+      if network_params
+        network_params = keys_to_symbols(network_params)
+        node.vm.network network_type, network_params
+      else
+        node.vm.network network_type
+      end
+    end
+  end
+end
+
+# Configure synced folders for the given node from settings in vagrant.yml
+def configure_synced_folders(node, node_details)
+  synced_folders = node_details['synced_folders']
+  synced_folders && synced_folders.each do |synced_folder|
+    node.vm.synced_folder synced_folder['host'], synced_folder['guest']
+  end
+end
+
+# Configure forwarded ports for the given node from settings defined in vagrant.yml
+def configure_forwarded_ports(node, node_details)
+  forwarded_ports = node_details['forwarded_ports']
+  forwarded_ports && forwarded_ports.each do |forwarded_port|
+    forwarded_port = keys_to_symbols(forwarded_port)
+    node.vm.network 'forwarded_port', forwarded_port
+  end
+end
+
+# Configure provisioner properties for the given node from settings defined in vagrant.yml
+#
+# Each key in vagrant.yml should correspond to a valid vagrant provisioner.
+# Each value should correspond to a valid setting for that provisioner.
+#   (Except for 'arguments', which is an array of arguments to the shell provisioner script.)
+def configure_provisioners(node, node_details)
+  provisioners = node_details['provisioners']
+  provisioners && provisioners.each do |provisioner|
+    provisioner.each do |provisioner_type, provisioner_params|
+      node.vm.provision provisioner_type do |provision|
+        provisioner_params.each do |key, value|
+          if key == 'arguments'
+            provision.args = shell_provisioner_args(value) 
+          else
+            provision.send("#{key}=", value) 
+          end
+        end
+      end
+    end
+  end
+end
+
+# Configure provider-specific settings for the given node from settings defined in vagrant.yml
+#
+# Each key in vagrant.yml should correspond to a valid vagrant provider
+# Each value should be a hash of valid settings for that provider
+# NOTE: memory and cpus are common enough settings that I don't treat them as
+#       provider-specific in the .yml files
+def configure_providers(node, node_details, node_name)
+  # General provider-specific settings
+  providers = node_details['providers']
+  providers && providers.each do |provider_type, provider_params|
+    node.vm.provider provider_type do |node_provider|
+       provider_params.each do |key, value| 
+         node_provider.send("#{key}=", value)
+       end
+    end
+  end
+
+  # Special case provider-specifc settings
+  node.vm.provider 'virtualbox' do |vb|
+    vb.customize [ 'modifyvm', :id, '--memory', node_details['memory'] ]
+    vb.customize [ 'modifyvm', :id, '--cpus', node_details['cpus'] ]
+    vb.name = node_name
+  end
+  node.vm.provider 'vmware_fusion' do |vmf|
+    vmf.vmx['memsize'] = node_details['memory']
+    vmf.vmx['numvcpus'] = node_details['cpus']
+  end
+end
+
+###############################################################################
+# Initialization
+###############################################################################
+
 # Verify that vagrant.yml exists
 root_dir = File.dirname(__FILE__)
 vagrant_yaml_file = "#{root_dir}/vagrant.yml"
@@ -75,94 +182,24 @@ nodes = vagrant_yaml['nodes']
 verify_nodes(nodes)
 
 ###############################################################################
-# Vagrantfile proper
+# Vagrant configuration loop
 ###############################################################################
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = '2'
 
+# For each node defined in vagrant.yml,
+# set the properties of a vagrant VM by calling the functions defined above.
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Define vagrant VMs for each node defined in vagrant.yml
   nodes.each do |node_name, node_details|
     config.vm.define node_name do |node|
-      # configure box name and url (if not a vagrant cloud box)
-      box_name = "#{node_details['box']}"
-      node.vm.box = "#{box_name}"
-      boxes && boxes.key?("#{box_name}") && node.vm.box_url = boxes[box_name]
-     
-      # configure basic settings
-      node.vm.hostname = node_details['hostname']
-
-      # configure networks
-      networks = node_details['networks']
-      networks && networks.each do |network|
-        network.each do |network_type, network_params|
-          if network_params
-            network_params = keys_to_symbols(network_params)
-            node.vm.network network_type, network_params
-          else
-            node.vm.network network_type
-          end
-        end
-      end
-
-      # configure synced folders 
-      synced_folders = node_details['synced_folders']
-      synced_folders && synced_folders.each do |synced_folder|
-        node.vm.synced_folder synced_folder['host'], synced_folder['guest']
-      end
-
-      # configure forwarded ports
-      forwarded_ports = node_details['forwarded_ports']
-      forwarded_ports && forwarded_ports.each do |forwarded_port|
-        forwarded_port = keys_to_symbols(forwarded_port)
-        node.vm.network 'forwarded_port', forwarded_port
-      end
-
-      # Configure provisioners
-      # Each key should correspond to a valid vagrant provisioner.
-      # Each value should correspond to a valid setting for that provisioner.
-      #   (Except for 'arguments', which is an array of arguments to the shell provisioner script.)
-      provisioners = node_details['provisioners']
-      provisioners && provisioners.each do |provisioner|
-        provisioner.each do |provisioner_type, provisioner_params|
-          node.vm.provision provisioner_type do |provision|
-            provisioner_params.each do |key, value|
-              if key == 'arguments'
-                provision.args = shell_provisioner_args(value) 
-              else
-                provision.send("#{key}=", value) 
-              end
-            end
-          end
-        end
-      end
-
-      # General provider-specific settings
-      # Each key should correspond to a valid vagrant provider
-      # Each value should be a hash of valid settings for that provider
-      providers = node_details['providers']
-      providers && providers.each do |provider_type, provider_params|
-        node.vm.provider provider_type do |node_provider|
-           provider_params.each do |key, value| 
-             node_provider.send("#{key}=", value)
-           end
-        end
-      end
-
-      # Special case provider-specifc settings
-      # NOTE: memory and cpus are common enough settings that I don't treat them as
-      #       provider-specific in the .yml files
-      node.vm.provider 'virtualbox' do |vb|
-        vb.customize [ 'modifyvm', :id, '--memory', node_details['memory'] ]
-        vb.customize [ 'modifyvm', :id, '--cpus', node_details['cpus'] ]
-        vb.name = node_name
-      end
-      node.vm.provider 'vmware_fusion' do |vmf|
-        vmf.vmx['memsize'] = node_details['memory']
-        vmf.vmx['numvcpus'] = node_details['cpus']
-      end
-
+      configure_basic_info(node, node_details, boxes)
+      configure_networks(node, node_details)
+      configure_synced_folders(node, node_details)
+      configure_forwarded_ports(node, node_details)
+      configure_provisioners(node, node_details)
+      configure_providers(node, node_details, node_name)
     end
   end
 end
