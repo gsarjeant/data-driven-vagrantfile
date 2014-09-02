@@ -7,6 +7,12 @@ There are a number of sample vagrant.yml files in the [examples/vagrant_yml](exa
 
 See the [Project Wiki](https://github.com/gsarjeant/data-driven-vagrantfile/wiki) for detailed configuration documentation.
 
+## Why does this exist?
+
+This began as a learning project: vagrant is an extermely powerful tool, but its syntax can be somewhat arcane, especially when defining multi-VM vagrant environments. I wanted to see how much of that syntax I could mask by making a generic Vagrantfile using only ruby functions in the Vagrantfile itself, and I also wanted a good starter ruby project. It's grown into something that has been handy for me on a number of occasions, and so I decided to polish it up somewhat and make it available.
+
+There are other projects that allow you to configure vagrant with data, notably Adrien Thebo's [vagrant-config_builder](https://github.com/adrienthebo/vagrant-config_builder), which is more robust and more flexible than this. That project may better meet your needs, especially if you have sophisticated requirements for your vagrant project (though if this doesn't handle something that you want, by all means feel free to submit a PR or a bug report). For putting together a quick solution that uses common vagrant settings, you may find this to be useful as well. It requires no plugins: just drop the Vagrantfile in your project's root and define some VMs in vagrant.yml in the same directory.
+
 ## Supported vagrant capabilities
 
 The Vagrantfile currently supports the following vagrant capabilities:
