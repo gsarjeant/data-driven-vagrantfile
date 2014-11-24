@@ -9,6 +9,23 @@
 # We're going to read from yaml files, so we gots to know how to yaml
 require 'yaml'
 
+# If the external_functions directory exists, then load
+# functions from any ruby files in that directory
+#
+# NOTE: Sometimes we want to do things that are a bit more dynamic than just
+#       setting Vagrantfile properties. This provides the ability to define
+#       this sort of dynamic behavior externally to the Vagrantfile itself
+root_dir = File.dirname(__FILE__)
+external_functions_dir = 'external_functions'
+external_functions_path = "#{root_dir}/#{external_functions_dir}"
+
+if File.exist?( external_functions_path )
+  external_function_files = Dir.glob( "#{external_functions_path}/*.rb") 
+  external_function_files && external_function_files.each do |external_function_file|
+    require_relative "#{external_functions_dir}/#{File.basename( external_function_file, '.rb' )}"
+  end
+end
+
 ###############################################################################
 # Utility functions
 ###############################################################################
@@ -160,6 +177,17 @@ def configure_providers(node, node_details, node_name)
   end
 end
 
+# Call any external functions that are defined in vagrant.yml.
+# NOTE: These functions must be defined in ruby files in the
+#       external_functions folder
+def call_external_functions(node, node_details)
+  external_functions = node_details['external_functions']
+  external_functions && external_functions.each do |external_function|
+    send( external_function, node )
+  end
+end
+
+
 ###############################################################################
 # Initialization
 ###############################################################################
@@ -200,6 +228,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       configure_forwarded_ports(node, node_details)
       configure_provisioners(node, node_details)
       configure_providers(node, node_details, node_name)
+
+      call_external_functions(node, node_details)
     end
   end
 end
