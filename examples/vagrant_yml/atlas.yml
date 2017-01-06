@@ -1,0 +1,8 @@
+# Note that the 'boxes' key is unnecessary if using an atlas box.
+# Just provide the correct key for the box in the node block.
+nodes:
+  centos:
+    hostname: centos.vagrant.vm
+    box: centos/7
+    memory: 1024
+    cpus: 1
