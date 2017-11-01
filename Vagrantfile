@@ -113,7 +113,7 @@ end
 def configure_synced_folders(node, node_details)
   synced_folders = node_details['synced_folders']
   synced_folders && synced_folders.each do |synced_folder|
-    node.vm.synced_folder synced_folder['host'], synced_folder['guest']
+    node.vm.synced_folder synced_folder['host'], synced_folder['guest'], type: synced_folder['type']
   end
 end
 
